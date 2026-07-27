@@ -1,5 +1,5 @@
 const CACHE_NAME =
-  "care-insight-v2";
+  "care-insight-v3";
 
 const APP_FILES = [
   "./",
