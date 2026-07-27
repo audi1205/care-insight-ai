@@ -34,24 +34,28 @@
   ======================================== */
 
   #portalPage .sidebar {
-    position: -webkit-sticky !important;
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 9999 !important;
-    align-self: flex-start !important;
+  position: sticky !important;
 
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
+  top: 0 !important;
+  z-index: 9999 !important;
 
-    height: auto !important;
-    min-height: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
 
-    margin: 0 !important;
-    padding: 14px 14px 10px !important;
+  height: auto !important;
+  min-height: 0 !important;
 
-    overflow: visible !important;
-  }
+  margin: 0 !important;
+
+  padding:
+    calc(14px + env(safe-area-inset-top))
+    14px
+    10px
+    14px !important;
+
+  overflow: visible !important;
+}
 
   #portalPage .sidebar h1 {
     margin: 0 !important;
@@ -295,7 +299,9 @@
   }
 
   .app-section {
-    scroll-margin-top: 115px !important;
+  scroll-margin-top:
+    calc(115px + env(safe-area-inset-top))
+    !important;
   }
 
   /* ========================================
