@@ -3605,12 +3605,24 @@ function registerServiceWorker() {
   }
 
   navigator.serviceWorker
-    .register("./service-worker.js")
+    .register("./service-worker.js", {
+      /*
+       * Service Worker 자체도
+       * 브라우저 캐시 대신 최신 버전을 확인
+       */
+      updateViaCache: "none"
+    })
     .then((registration) => {
       console.log(
         "Care Insight Service Worker 등록 완료:",
         registration.scope
       );
+
+      /*
+       * 페이지를 열 때마다
+       * 새 Service Worker가 있는지 확인
+       */
+      registration.update();
     })
     .catch((error) => {
       console.error(
