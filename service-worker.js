@@ -1,4 +1,5 @@
-const CACHE_NAME = "care-insight-runtime";
+﻿const CACHE_VERSION = "20260728070628";
+const CACHE_NAME = `care-insight-runtime-${CACHE_VERSION}`;
 
 const CORE_FILES = [
   "./",
