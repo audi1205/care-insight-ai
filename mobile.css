@@ -1,0 +1,428 @@
+/* ========================================
+   Care Insight AI - Mobile Layout
+   Android / iPhone 공통
+======================================== */
+
+/* PC 기본값 */
+.mobile-more-menu-button,
+.mobile-more-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* ========================================
+     1. 기본 화면 및 포털 레이아웃
+  ======================================== */
+
+  html,
+  body {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  #portalPage {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* ========================================
+     2. 모바일 상단 헤더
+  ======================================== */
+
+  #portalPage .sidebar {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 9999 !important;
+    align-self: flex-start !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    margin: 0 !important;
+    padding: 14px 14px 10px !important;
+
+    overflow: visible !important;
+  }
+
+  #portalPage .sidebar h1 {
+    margin: 0 !important;
+    font-size: 19px !important;
+    line-height: 1.25 !important;
+    white-space: nowrap;
+  }
+
+  #portalPage .sidebar h2,
+  #portalPage .sidebar p {
+    display: none !important;
+  }
+
+  /* ========================================
+     3. 모바일 상단 메뉴
+  ======================================== */
+
+  #portalPage .sidebar nav,
+  #portalPage .sidebar-menu,
+  #portalPage .menu-list {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+
+    width: 100% !important;
+    gap: 6px !important;
+
+    margin: 12px 0 0 !important;
+    padding: 0 0 5px !important;
+
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #portalPage .sidebar nav::-webkit-scrollbar,
+  #portalPage .sidebar-menu::-webkit-scrollbar,
+  #portalPage .menu-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  #portalPage .sidebar nav a,
+  #portalPage .sidebar nav button,
+  #portalPage .sidebar-menu a,
+  #portalPage .sidebar-menu button,
+  #portalPage .sidebar a,
+  #portalPage .sidebar button,
+  #portalPage .menu-item {
+    flex: 0 0 auto !important;
+
+    width: auto !important;
+    min-width: max-content !important;
+    height: 38px !important;
+    min-height: 38px !important;
+
+    margin: 0 !important;
+    padding: 8px 12px !important;
+
+    border-radius: 9px !important;
+
+    font-size: 13px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  #portalPage .logout-button,
+  #portalPage #logoutButton {
+    position: static !important;
+    flex: 0 0 auto !important;
+
+    width: auto !important;
+    min-width: max-content !important;
+    height: 38px !important;
+    min-height: 38px !important;
+
+    margin: 0 !important;
+    padding: 8px 12px !important;
+  }
+
+  .sidebar nav button:hover {
+    transform: none;
+  }
+/* ========================================
+   모바일 전체 메뉴 버튼
+======================================== */
+
+#portalPage .sidebar {
+  position: sticky !important;
+}
+
+.mobile-more-menu-button {
+  display: none !important;
+  justify-content: center;
+  align-items: center;
+
+  position: absolute !important;
+  right: 10px;
+  bottom: 13px;
+  z-index: 20;
+
+  width: 42px !important;
+  min-width: 42px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0;
+  border-radius: 9px;
+
+  font-size: 24px !important;
+  line-height: 1 !important;
+  cursor: pointer;
+}
+
+/*
+ * 메뉴가 화면을 벗어날 때만 ⋯ 버튼 표시
+ */
+#portalPage .sidebar.has-mobile-more
+.mobile-more-menu-button {
+  display: flex !important;
+}
+
+/*
+ * ⋯ 버튼이 나타날 때만 오른쪽 공간 확보
+ */
+#portalPage .sidebar.has-mobile-more nav,
+#portalPage .sidebar.has-mobile-more .sidebar-menu,
+#portalPage .sidebar.has-mobile-more .menu-list {
+  padding-right: 52px !important;
+}
+
+/*
+ * 펼쳐지는 전체 메뉴
+ */
+.mobile-more-menu {
+  display: block !important;
+  position: absolute;
+  top: calc(100% - 8px);
+  right: 10px;
+  z-index: 30;
+
+  width: min(260px, calc(100vw - 20px));
+  max-height: calc(100vh - 130px);
+
+  padding: 8px;
+
+  overflow-y: auto;
+
+  border: 1px solid #334155;
+  border-radius: 12px;
+
+  background: #0f172a;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-more-menu[hidden] {
+  display: none !important;
+}
+
+.mobile-more-menu-item {
+  display: block !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 44px !important;
+
+  margin: 0 !important;
+  padding: 11px 12px !important;
+
+  border: 0;
+  border-radius: 8px;
+
+  text-align: left;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  white-space: normal !important;
+
+  cursor: pointer;
+}
+
+.mobile-more-menu-item + .mobile-more-menu-item {
+  margin-top: 4px !important;
+}
+.mobile-more-menu a {
+  display: flex !important;
+  align-items: center;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 44px !important;
+
+  margin: 0 !important;
+  padding: 11px 12px !important;
+
+  text-align: left;
+  white-space: normal !important;
+}
+  /* ========================================
+     4. 모바일 본문 및 공통 섹션
+  ======================================== */
+
+  #portalPage .main {
+    position: relative;
+    z-index: 1;
+  }
+
+  #portalPage main,
+  #portalPage .main-content,
+  #portalPage .content {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+
+  #portalPage section,
+  #portalPage .card,
+  #portalPage .panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #portalPage .row,
+  #portalPage .form-row,
+  #portalPage .resident-row,
+  #portalPage .content-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px;
+  }
+
+  .app-section {
+    scroll-margin-top: 115px !important;
+  }
+
+  /* ========================================
+     5. 입력 요소와 버튼
+  ======================================== */
+
+  #portalPage input,
+  #portalPage select,
+  #portalPage textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    font-size: 16px;
+  }
+
+  #portalPage button {
+    min-height: 44px;
+  }
+
+  #portalPage h1,
+  #portalPage h2,
+  #portalPage h3,
+  #portalPage p,
+  #portalPage span,
+  #portalPage label,
+  #portalPage button {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  /* ========================================
+     6. 요약 대시보드
+  ======================================== */
+
+  .summary-dashboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .summary-card {
+    padding: 14px;
+    border-radius: 13px;
+  }
+
+  .summary-card-header {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .summary-card-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
+
+  .summary-card-label {
+    font-size: 12px;
+  }
+
+  .summary-card-value strong {
+    font-size: 25px;
+  }
+
+  .summary-alert-value strong {
+    font-size: 17px;
+  }
+
+  .summary-card p {
+    font-size: 11px;
+  }
+
+  /* ========================================
+     7. 통합 기록 검색
+  ======================================== */
+
+  .care-search-box {
+    align-items: stretch;
+  }
+
+  .care-search-box input {
+    flex-basis: 100%;
+    width: 100%;
+  }
+
+  .care-search-box button {
+    flex: 1;
+  }
+
+  .care-search-result-header {
+    display: block;
+  }
+
+  .care-search-result-date {
+    display: block;
+    margin-top: 5px;
+  }
+
+  /* ========================================
+     8. 관찰 기록 모달
+  ======================================== */
+
+  .observation-modal {
+    padding: 12px;
+  }
+
+  .observation-modal .modal-content,
+  .observation-modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(100vh - 24px);
+
+    margin: 0 auto !important;
+    overflow-y: auto;
+  }
+}
+
+/* ========================================
+   소형 스마트폰 추가 보정
+======================================== */
+
+@media (max-width: 390px) {
+  .summary-dashboard {
+    gap: 8px;
+  }
+
+  .summary-card {
+    padding: 12px;
+  }
+}

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+  <style>
+  html:not(.auth-ready) body {
+    visibility: hidden;
+  }
+  </style>
+  <title>Care Insight Portal</title>
+  <link
+  rel="manifest"
+  href="manifest.json"
+  />
+
+  <meta
+    name="theme-color"
+    content="#0f172a"
+  />
+  <meta
+  name="mobile-web-app-capable"
+  content="yes"
+/>
+
+<meta
+  name="apple-mobile-web-app-capable"
+  content="yes"
+/>
+
+<meta
+  name="apple-mobile-web-app-status-bar-style"
+  content="black-translucent"
+/>
+
+<meta
+  name="apple-mobile-web-app-title"
+  content="Care Insight"
+/>
+
+<link
+  rel="apple-touch-icon"
+  href="./icons/icon-192.png"
+/>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+
+<body>
+  <!-- 로그인 화면 -->
+  <div id="loginPage" class="login-page">
+    <div class="login-box">
+      <h1>Care Insight AI<br />Created by 정유신</h1>
+      <p>돌봄 데이터를 자산으로</p>
+
+      <input id="userId" type="text" placeholder="아이디" />
+      <input id="userPw" type="password" placeholder="비밀번호" />
+
+      <button onclick="login()">로그인</button>
+      <small>테스트 계정: admin / 1234</small>
+    </div>
+  </div>
+
+  <!-- 포털 화면 -->
+  <div id="portalPage" class="app" style="display: none;">
+    <aside class="sidebar">
+      <h1>Care Insight AI<br />Created by 정유신</h1>
+      <p>돌봄 데이터를 자산으로</p>
+
+     <nav id="sidebarNav">
+      <button
+        type="button"
+        class="active"
+        data-section="observationSection"
+        onclick="navigateToSection('observationSection', this)"
+      >
+        관찰 기록
+      </button>
+
+      <button
+        type="button"
+        data-section="aiSection"
+        onclick="navigateToSection('aiSection', this)"
+      >
+        AI 자동 기록
+      </button>
+
+      <button
+        type="button"
+        data-section="residentManagerSection"
+        onclick="navigateToSection('residentManagerSection', this)"
+      >
+        어르신 정보
+      </button>
+
+      <button
+        type="button"
+        data-section="summaryDashboardSection"
+        onclick="navigateToSection('summaryDashboardSection', this)"
+      >
+        대시보드
+      </button>
+      <button
+        type="button"
+        data-section="searchSection"
+        onclick="navigateToSection('searchSection', this)"
+      >
+        🔍 기록 검색
+      </button>
+      <button
+        type="button"
+        data-section="reportSection"
+        onclick="navigateToSection('reportSection', this)"
+      >
+        보고서
+      </button>
+
+      <button
+        type="button"
+        onclick="openSettingsNotice(this)"
+      >
+        설정
+      </button>
+    </nav>
+      <button
+        id="mobileMoreMenuButton"
+        class="mobile-more-menu-button"
+        type="button"
+        aria-label="전체 메뉴 보기"
+        aria-expanded="false"
+        onclick="toggleMobileMoreMenu(event)"
+      >
+        ⋯
+      </button>
+
+      <div
+        id="mobileMoreMenu"
+        class="mobile-more-menu"
+        hidden
+      ></div>
+
+      <div class="logout-area">
+        <button class="logout-btn" onclick="logout()">로그아웃</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div>
+          <h2 id="residentName">김OO 어르신</h2>
+          <p id="residentInfo">M / 82세 · 등급 2등급 · 담당: 홍길동 요양보호사</p>
+        </div>
+
+        <select id="residentSelect" onchange="changeResident()"></select>
+        <button class="connect">케어포 연동</button>
+      </header>
+<!-- ===========================
+    요약 대시보드
+=========================== -->
+        <section
+          id="summaryDashboardSection"
+          class="summary-dashboard app-section"
+        >
+        <article class="summary-card">
+          <div class="summary-card-header">
+            <span class="summary-card-icon">🧠</span>
+            <span class="summary-card-label">AI Care Score</span>
+          </div>
+
+          <div class="summary-card-value">
+            <strong id="dashboardCareScore">-</strong>
+            <span>점</span>
+          </div>
+
+          <p id="dashboardCareScoreText">
+            분석 전
+          </p>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-card-header">
+            <span class="summary-card-icon">📝</span>
+            <span class="summary-card-label">오늘 기록</span>
+          </div>
+
+          <div class="summary-card-value">
+            <strong id="dashboardTodayCount">0</strong>
+            <span>건</span>
+          </div>
+
+          <p>
+            오늘 저장된 관찰 기록
+          </p>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-card-header">
+            <span class="summary-card-icon">⚠️</span>
+            <span class="summary-card-label">Care Alert</span>
+          </div>
+
+          <div class="summary-card-value summary-alert-value">
+            <strong id="dashboardAlertLevel">분석 전</strong>
+          </div>
+
+          <p id="dashboardAlertText">
+            현재 생성된 알림이 없습니다.
+          </p>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-card-header">
+            <span class="summary-card-icon">✅</span>
+            <span class="summary-card-label">Care Plan</span>
+          </div>
+
+          <div class="summary-card-value">
+            <strong id="dashboardPendingPlan">0</strong>
+            <span>건</span>
+          </div>
+
+          <p>
+            아직 완료하지 않은 조치
+          </p>
+        </article>
+      </section>
+      <section
+        id="residentManagerSection"
+        class="resident-manager app-section"
+      >
+        <h3>어르신 관리</h3>
+
+        <div class="resident-form">
+          <input id="newResidentName" type="text" placeholder="어르신 이름" />
+          <input id="newResidentInfo" type="text" placeholder="예: F / 87세 · 등급 3등급 · 담당: 김영희 요양보호사" />
+          <button onclick="addResident()">어르신 추가</button>
+        </div>
+
+        <div class="resident-actions">
+          <button onclick="loadResidentForEdit()">선택 어르신 수정</button>
+          <button class="danger-btn" onclick="deleteResident()">선택 어르신 삭제</button>
+        </div>
+      </section>
+
+      <section
+        id="searchSection"
+        class="app-section care-search-section"
+      >
+          <div class="section-header">
+          <div>
+            <h2>통합 기록 검색</h2>
+            <p>
+              관찰 기록, 조치, 평가, AI 분석을 한 번에 검색합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="care-search-box">
+          <input
+            id="careSearchInput"
+            type="search"
+            placeholder="예: 낙상, 식사, 통증, 배회"
+            autocomplete="off"
+          />
+
+          <button
+            type="button"
+            onclick="searchCareRecords()"
+          >
+            검색
+          </button>
+
+          <button
+            type="button"
+            class="secondary-button"
+            onclick="clearCareSearch()"
+                >
+            초기화
+          </button>
+        </div>
+
+        <div
+          id="careSearchSummary"
+          class="care-search-summary"
+        >
+          검색어를 입력해주세요.
+        </div>
+
+        <div
+          id="careSearchResults"
+          class="care-search-results"
+        ></div>
+      </section>
+
+<!-- ===========================
+     Care Insight Dashboard
+=========================== -->
+<section class="dashboard-grid">
+
+  <!-- 왼쪽: 관찰 입력과 AI 분석 -->
+  <div class="insight-column">
+
+    <!-- 관찰 기록 입력 -->
+    <section
+      id="observationSection"
+      class="record-panel app-section"
+    >
+      <div class="section-header">
+        <div>
+          <h3>관찰 기록</h3>
+          <p>오늘 관찰된 상태를 선택해주세요.</p>
+        </div>
+      </div>
+
+      <div class="button-grid">
+        <button onclick="openObservationModal('식사저하')">
+          🍽️ 식사저하
+        </button>
+
+        <button onclick="openObservationModal('기침/가래')">
+          🗣️ 기침/가래
+        </button>
+
+        <button onclick="openObservationModal('배회')">
+          🚶 배회
+        </button>
+
+        <button onclick="openObservationModal('반복질문')">
+          ❓ 반복질문
+        </button>
+
+        <button onclick="openObservationModal('수면장애')">
+           🛏️ 수면장애
+        </button>
+
+        <button onclick="openObservationModal('통증호소')">
+           🤕 통증호소
+        </button>
+
+        <button onclick="openObservationModal('거부/저항')">
+            ✋ 거부/저항
+        </button>
+
+        <button onclick="openObservationModal('공격행동')">
+          😠 공격행동
+        </button>
+        <button onclick="openObservationModal('낙상위험')">
+          ⚠️ 낙상위험
+        </button>
+      </div>
+
+      <button class="ai-btn" onclick="generateAIRecord()">
+        AI 기록 생성하기
+      </button>
+    </section>
+
+    <!-- AI 분석 결과 -->
+    <section
+      id="aiSection"
+      class="ai-result app-section"
+    >
+      <div class="section-header">
+        <div>
+          <h3>AI 상태분석</h3>
+          <p>관찰 기록을 기반으로 자동 분석합니다.</p>
+        </div>
+      </div>
+
+      <div class="ai-card">
+        <h4>상태변화 기록</h4>
+        <p id="aiText">
+          아직 생성된 기록이 없습니다.
+        </p>
+      </div>
+
+      <div class="ai-card">
+        <h4>위험도</h4>
+        <p id="aiRisk">
+          아직 분석된 위험도가 없습니다.
+        </p>
+      </div>
+      <div class="ai-card care-score-card">
+      <div class="care-score-header">
+        <h4>AI Care Score</h4>
+
+        <span
+           id="careScoreBadge"
+            class="care-score-badge score-empty"
+        >
+           분석 전
+        </span>
+      </div>
+
+      <div class="care-score-content">
+        <strong id="careScoreValue">-</strong>
+        <span>점</span>
+      </div>
+
+      <div class="care-score-track">
+        <div
+          id="careScoreBar"
+          class="care-score-bar"
+          style="width: 0%;"
+        ></div>
+      </div>
+
+      <p id="careScoreDescription">
+        관찰 기록을 분석하면 돌봄 상태 점수가 표시됩니다.
+      </p>
+    </div>
+
+    <div
+      id="careAlertCard"
+      class="ai-card care-alert-card alert-empty"
+    >
+    <div class="care-alert-header">
+      <h4>AI Care Alert</h4>
+
+      <span id="careAlertLevel">
+        분석 전
+      </span>
+    </div>
+
+    <p id="careAlertText">
+      현재 생성된 Care Alert가 없습니다.
+    </p>
+  </div>
+    
+  <div class="ai-card care-plan-card">
+      <div class="care-plan-header">
+        <div>
+          <h4>AI Care Plan</h4>
+          <p class="care-plan-subtitle">
+            오늘 관찰 기록을 바탕으로 추천된 돌봄 계획입니다.
+          </p>
+        </div>
+
+        <span
+          id="carePlanProgressBadge"
+          class="care-plan-progress-badge"
+        >
+          0 / 0 완료
+        </span>
+      </div>
+
+    <div class="care-plan-progress-track">
+      <div
+        id="carePlanProgressBar"
+        class="care-plan-progress-bar"
+        style="width:0%;"
+      ></div>
+    </div>
+
+    <div id="carePlanList" class="care-plan-list">
+      <p class="care-plan-empty">
+        AI 분석을 실행하면 Care Plan이 생성됩니다.
+      </p>
+    </div>
+</div>
+
+      <div class="ai-card">
+        <h4>추천 조치</h4>
+        <p id="aiAction">
+          아직 추천 조치가 없습니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- 오늘 기록 -->
+    <section class="right-panel">
+      <div class="section-header">
+        <div>
+          <h3>오늘 기록 현황</h3>
+          <p>선택한 어르신의 관찰 기록입니다.</p>
+        </div>
+      </div>
+
+      <div class="record-actions">
+        <button onclick="renderRecords()">
+          오늘 기록
+        </button>
+
+        <button onclick="renderAllRecords()">
+          전체 기록
+        </button>
+
+        <button onclick="clearCurrentResidentRecords()">
+          전체 기록 삭제
+        </button>
+      </div>
+
+      <ul id="recordList"></ul>
+    </section>
+
+  </div>
+
+  <!-- 오른쪽: Care Timeline -->
+  <div class="timeline-column">
+
+    <section class="timeline-section">
+      <div class="section-header">
+        <div>
+          <h3>Care Timeline</h3>
+          <p>
+            어르신의 관찰 기록과 AI 분석을 시간순으로 확인합니다.
+          </p>
+        </div>
+
+        <div class="timeline-tools">
+    <input
+      type="date"
+      id="timelineDeleteDate"
+    />
+
+    <button
+     class="secondary-btn"
+     onclick="renderTimeline()"
+    >
+      새로고침
+   </button>
+
+    <button
+     class="timeline-date-delete-btn"
+      onclick="deleteRecordsByDate()"
+    >
+      선택 날짜 삭제
+    </button>
+  </div>
+
+
+
+      </div>
+
+      <div id="timeline" class="timeline-list">
+        아직 표시할 Timeline 기록이 없습니다.
+      </div>
+
+      <!-- ===========================
+     Care Flow
+      =========================== -->
+<div class="care-flow-divider"></div>
+
+<div class="section-header care-flow-header">
+  <div>
+    <h3>Care Flow</h3>
+    <p>관찰·조치·평가를 하나의 돌봄 흐름으로 확인합니다.</p>
+  </div>
+
+  <button
+    type="button"
+    class="secondary-btn"
+    onclick="renderCareFlow()"
+  >
+    Flow 새로고침
+  </button>
+</div>
+
+<div id="careFlow" class="care-flow-list">
+  아직 표시할 Care Flow가 없습니다.
+</div>
+
+    </section>
+
+  </div>
+
+</section>
+
+      
+<section
+  id="reportSection"
+  class="report-section app-section"
+>
+  <div class="report-header">
+    <h3>AI 돌봄 보고서</h3>
+
+    <div class="report-actions">
+      <button onclick="generateReport()">보고서 생성</button>
+      <button onclick="printReport()">인쇄 / PDF 저장</button>
+    </div>
+  </div>
+
+  <div id="reportContent" class="report-content">
+    아직 생성된 보고서가 없습니다.
+  </div>
+</section>
+  </main>
+</div>
+
+
+  <!-- ===========================
+     관찰 상세입력 모달
+=========================== -->
+<div id="observationModal" class="observation-modal">
+  <div class="observation-modal-content">
+
+    <div class="observation-modal-header">
+      <h3 id="observationModalTitle">
+        관찰 상세 기록
+      </h3>
+
+      <button
+        type="button"
+        class="modal-close-btn"
+        onclick="closeObservationModal()"
+      >
+        ×
+      </button>
+    </div>
+
+    <div id="observationModalBody">
+      <!-- JavaScript에서 항목별 입력창 생성 -->
+    </div>
+
+    <div class="observation-modal-actions">
+      <button
+        type="button"
+        class="modal-cancel-btn"
+        onclick="closeObservationModal()"
+      >
+        취소
+      </button>
+
+      <button
+        type="button"
+        class="modal-save-btn"
+        onclick="saveObservationDetail()"
+      >
+        기록 저장
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===========================
+     조치 입력 모달
+=========================== -->
+<div id="actionModal" class="observation-modal">
+  <div class="observation-modal-content">
+
+    <div class="observation-modal-header">
+      <h3 id="actionModalTitle">조치 기록</h3>
+
+      <button
+        type="button"
+        class="modal-close-btn"
+        onclick="closeActionModal()"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="observation-field">
+      <label for="careActionType">조치 유형 *</label>
+
+      <select id="careActionType">
+        <option value="">선택해주세요</option>
+        <option value="간호사에게 보고">간호사에게 보고</option>
+        <option value="보호자에게 공유">보호자에게 공유</option>
+        <option value="의료진 확인 요청">의료진 확인 요청</option>
+        <option value="정서적 안정 지원">정서적 안정 지원</option>
+        <option value="수분 제공">수분 제공</option>
+        <option value="대체식 제공">대체식 제공</option>
+        <option value="영양보충음료 제공">영양보충음료 제공</option>
+        <option value="낙상 예방 환경 정리">낙상 예방 환경 정리</option>
+        <option value="이동 시 동행">이동 시 동행</option>
+        <option value="생활실 또는 침실로 안내">생활실 또는 침실로 안내</option>
+        <option value="지속 관찰">지속 관찰</option>
+        <option value="기타">기타</option>
+      </select>
+    </div>
+
+    <div
+      id="actionEtcField"
+      class="observation-field"
+      style="display: none;"
+    >
+      <label for="careActionEtc">기타 조치 *</label>
+
+      <input
+        id="careActionEtc"
+        type="text"
+        placeholder="실시한 조치를 입력해주세요."
+      />
+    </div>
+
+    <div class="observation-field">
+      <label for="careActionNote">조치 내용</label>
+
+      <textarea
+        id="careActionNote"
+        placeholder="조치 과정이나 어르신의 반응을 입력해주세요."
+      ></textarea>
+    </div>
+
+    <div class="observation-modal-actions">
+      <button
+        type="button"
+        class="modal-cancel-btn"
+        onclick="closeActionModal()"
+      >
+        취소
+      </button>
+
+      <button
+        type="button"
+        class="modal-save-btn"
+        onclick="saveCareAction()"
+      >
+        조치 저장
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===========================
+     평가 입력 모달
+=========================== -->
+<div id="evaluationModal" class="observation-modal">
+  <div class="observation-modal-content">
+
+    <div class="observation-modal-header">
+      <h3 id="evaluationModalTitle">조치 결과 평가</h3>
+
+      <button
+        type="button"
+        class="modal-close-btn"
+        onclick="closeEvaluationModal()"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="observation-field">
+      <label for="evaluationResult">결과 상태 *</label>
+
+      <select id="evaluationResult">
+        <option value="">선택해주세요</option>
+        <option value="호전됨">호전됨</option>
+        <option value="일부 호전됨">일부 호전됨</option>
+        <option value="변화 없음">변화 없음</option>
+        <option value="악화됨">악화됨</option>
+        <option value="평가 보류">평가 보류</option>
+      </select>
+    </div>
+
+    <div class="observation-field">
+      <label for="evaluationTime">평가 시점 *</label>
+
+      <select id="evaluationTime">
+        <option value="">선택해주세요</option>
+        <option value="즉시">즉시</option>
+        <option value="30분 후">30분 후</option>
+        <option value="1시간 후">1시간 후</option>
+        <option value="2시간 후">2시간 후</option>
+        <option value="다음 식사 후">다음 식사 후</option>
+        <option value="다음 근무 시">다음 근무 시</option>
+        <option value="다음 날">다음 날</option>
+      </select>
+    </div>
+
+    <div class="observation-field">
+      <label for="evaluationNote">평가 내용</label>
+
+      <textarea
+        id="evaluationNote"
+        placeholder="증상 변화, 어르신의 반응, 추가 조치 필요 여부 등을 입력해주세요."
+      ></textarea>
+    </div>
+
+    <div class="observation-modal-actions">
+      <button
+        type="button"
+        class="modal-cancel-btn"
+        onclick="closeEvaluationModal()"
+      >
+        취소
+      </button>
+
+      <button
+        type="button"
+        class="modal-save-btn"
+        onclick="saveCareEvaluation()"
+      >
+        평가 저장
+      </button>
+    </div>
+
+  </div>
+</div>
+
+  <script src="utils.js"></script>
+  <script src="storage.js"></script>
+  <script src="auth.js"></script>
+  <script src="resident.js"></script>
+  <script src="timeline.js"></script>
+  <script src="careflow.js"></script>
+  <script src="care-actions.js"></script>
+  <script src="timeline-actions.js"></script>
+  <script src="ai.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

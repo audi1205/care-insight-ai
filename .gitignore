@@ -1,0 +1,7 @@
+backup/
+git-test/
+*-backup-*
+.vscode/
+.DS_Store
+Thumbs.db
+badkup/
