@@ -3600,16 +3600,34 @@ function registerServiceWorker() {
     console.log(
       "이 브라우저는 Service Worker를 지원하지 않습니다."
     );
-
     return;
   }
 
+  let refreshing = false;
+
+  /*
+   * 새 Service Worker가 적용되면
+   * 페이지를 자동으로 한 번 새로고침
+   */
+  navigator.serviceWorker.addEventListener(
+    "controllerchange",
+    () => {
+      if (refreshing) {
+        return;
+      }
+
+      refreshing = true;
+
+      console.log(
+        "Care Insight AI 새 버전을 적용합니다."
+      );
+
+      window.location.reload();
+    }
+  );
+
   navigator.serviceWorker
     .register("./service-worker.js", {
-      /*
-       * Service Worker 자체도
-       * 브라우저 캐시 대신 최신 버전을 확인
-       */
       updateViaCache: "none"
     })
     .then((registration) => {
@@ -3619,10 +3637,29 @@ function registerServiceWorker() {
       );
 
       /*
-       * 페이지를 열 때마다
-       * 새 Service Worker가 있는지 확인
+       * 앱을 처음 실행했을 때 업데이트 확인
        */
       registration.update();
+
+      /*
+       * 홈 화면 등으로 나갔다가
+       * Care Insight 앱으로 돌아오면
+       * 최신 버전 확인
+       */
+      document.addEventListener(
+        "visibilitychange",
+        () => {
+          if (
+            document.visibilityState === "visible"
+          ) {
+            console.log(
+              "Care Insight AI 업데이트 확인"
+            );
+
+            registration.update();
+          }
+        }
+      );
     })
     .catch((error) => {
       console.error(
